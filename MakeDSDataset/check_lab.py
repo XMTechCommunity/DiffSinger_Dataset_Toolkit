@@ -39,10 +39,49 @@ def progress(path, dictionary):
     if length_has_error:
         print("过长的音频可能会造成训练时显存溢出。Too long audio files may cause CUDA Out Of Memory.")
 
-    if not lab_has_error and not length_has_error:
-        print("All files are paired successfully.")
+    phoneme_has_error = False
+    phonemes = []
+    phoneme_lab_has = []
+    dict = {}
+    with open(dictionary, 'r', encoding='utf-8') as f:
+        for line in f:
+            line = line.strip()
+            key = line.split('\t')[0]
+            values = (line.split('\t')[1]).split(' ')
+            dict.update({key: values})
+            for value in values:
+                if value not in phonemes:
+                    phonemes.append(value)
 
+    print("phonemes:", phonemes)
 
+    for lab_file in lab_files:
+        with open(os.path.join(path, f"{lab_file}.lab"), 'r', encoding='utf-8') as f:
+            lab = f.read().split(" ")
+            for words in lab:
+                if words in dict:
+                    for phoneme in dict[words]:
+                        if phoneme not in phoneme_lab_has:
+                            phoneme_lab_has.append(phoneme)
+                else:
+                    print(f"错误：{lab_file}.lab 中 {words} 不是有效的歌词，请检查。Error: {lab_file}.lab has an invalid word: {words}")
+                    phoneme_has_error = True
+
+    print("phoneme_lab_has:", phoneme_lab_has)
+    set_phoneme = set(phonemes)
+    set_phoneme_lab_has = set(phoneme_lab_has)
+
+    missing = list(set_phoneme - set_phoneme_lab_has)
+    if missing != []:
+        print("错误：以下音素在数据集中没有找到。Error: The following phonemes are not found in the dataset.")
+        print("请尝试补充录制数据．或者使用开源数据集补全音素。Please try to supplement the recording data or use an open-source dataset to complete the phoneme.")
+        print(missing)
+        if len(missing) > 5:
+            print("缺失音素过多，可能导致模型训练失败。Missing phonemes are too many, which may cause the model to fail to train.")
+        phoneme_has_error = True
+
+    if not lab_has_error and not length_has_error and not phoneme_has_error:
+        print("一切妥当。现在可以使用MFA或者SOFA处理数据了。Everything is fine. Now you can use MFA or SOFA to process the data.")
 
 if __name__ == '__main__':
     progress()
