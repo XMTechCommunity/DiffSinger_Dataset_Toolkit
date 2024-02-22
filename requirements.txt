@@ -1,3 +1,7 @@
 shutil
 pydub
 click
+librosa
+soundfile
+tqdm
+textgrid
