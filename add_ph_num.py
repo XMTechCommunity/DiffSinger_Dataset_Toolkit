@@ -16,8 +16,7 @@ def find_ph_num(i, phonemes_split, dict):
 @click.command()
 @click.option('--csv_path',required = True, help='Path to CSV file')
 @click.option('--dictionary',required = True, help='Path to dictionary file')
-@click.option('--output',required = False,help='Path to output CSV file')
-def add_ph_num(csv_path,dictionary,output):
+def add_ph_num(csv_path,dictionary):
     ph_seq_index = 1
     with open(csv_path, mode='r', newline='', encoding='utf-8') as csvfile:
         phonemes_tmp = []
