@@ -1,6 +1,18 @@
 import click
 import csv
 
+def find_ph_num(i, phonemes_split, dict):
+    ph_tmp = []
+    left = i
+    right = i
+    for j in range(i, len(phonemes_split)):
+        ph_tmp.append(phonemes_split[j])
+        if ph_tmp in dict.values():
+            right = j
+    return left, right
+
+
+
 @click.command()
 @click.option('--csv_path',required = True, help='Path to CSV file')
 @click.option('--dictionary',required = True, help='Path to dictionary file')
@@ -10,10 +22,9 @@ def add_ph_num(csv_path,dictionary,output):
     with open(csv_path, mode='r', newline='', encoding='utf-8') as csvfile:
         phonemes_tmp = []
         csv_reader = csv.reader(csvfile)
-        
+
         for row in csv_reader:
             phonemes_tmp.append(row[ph_seq_index])
-        # print(phonemes_tmp)
     
     dict = {}
     with open(dictionary, 'r', encoding='utf-8') as f:
@@ -26,19 +37,35 @@ def add_ph_num(csv_path,dictionary,output):
     ph_num = []
     for phonemes in phonemes_tmp:
         tmp = []
-        ph_tmp = []
         phonemes_split = phonemes.split(' ')
-        # print(phonemes_split)
-        for phoneme in phonemes_split:
-            if phoneme == "AP" or phoneme == "SP":
-                tmp.append(1)
+        i=0
+        while i < len(phonemes_split):
+            if phonemes_split[i] == "AP" or phonemes_split[i] == "SP":
+                tmp.append("1")
+                i+=1
             else:
-                ph_tmp.append(phoneme)
-                if ph_tmp in dict.values():
-                    tmp.append(len(ph_tmp))
-                    ph_tmp = []
+                left,right = find_ph_num(i,phonemes_split,dict)
+                tmp.append(str(right-left+1))
+                i = right+1
+
         ph_num.append(tmp)
-    print(ph_num)
+
+    ph_num_str = []
+    for i in ph_num:
+        string = ' '.join(i)
+        ph_num_str.append(string)
+    print(ph_num_str)
+
+    ph_num_str[0] = "ph_num"
+
+    with open(csv_path, 'r', newline='') as csvfile:
+        reader = csv.reader(csvfile)
+        rows = list(reader)
+    for i, value in enumerate(ph_num_str):
+        rows[i].append(value)
+    with open(csv_path, 'w', newline='') as csvfile:
+        writer = csv.writer(csvfile)
+        writer.writerows(rows)
 
 if __name__ == '__main__':
     add_ph_num()
