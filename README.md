@@ -5,17 +5,13 @@
 ### check_lab.py
 检查拼音标注文件是否正确
 
-用法：
-
 ```bash
 python check_lab.py --path /path/to/dataset --dictionary /path/to/dictionary
 ```
 其中，将/path/to/dataset替换为待检测数据集的路径，将/path/to/dictionary替换为字典文件的路径
 
 ### htk2csv.py
-将HTK格式的音素标记转换为CSV格式
-
-用法：
+将HTK格式的音素标记转换为CSV数据集标注文件
 
 ```bash
 python htk2csv.py /path/to/htk_file [可选：--output /path/to/new_csv_path]
@@ -30,9 +26,30 @@ opencpop
 
 如果需要将转换后的文件保存到其他位置，请使用--output参数指定新路径
 
+### generate_ph_num.py
+为CSV数据集标注文件生成ph_num字段<br>
+（ph_num代表多少个音素属于一个单词，训练唱法模型中的dur时需要）
+```bash
+python generate_ph_num.py --csv_path /path/to/csv_file --dictionary /path/to/dictionary
+```
+其中，将/path/to/csv_file替换为待生成ph_num字段的CSV格式标注文件，将/path/to/dictionary替换为字典文件的路径<br>
+请确保你的标注文件与所使用字典配套
+
+### csv2htk.py
+**非必要，仅为数据集维护使用**<br>
+将CSV格式的数据集标注文件转换回htk lab文件
+```bash
+python csv2htk.py /path/to/csv_file --output /path/to/new_htk_path
+```
+其中，将/path/to/csv_file替换为待转换的CSV格式标注文件，将/path/to/new_htk_path指向导出htk lab文件的路径
+
+
 ### build_dataset.py
 这个脚本来自于OpenVPI仓库，可参考：
-https://ecn4x4y9jhjs.feishu.cn/wiki/J4lZwVCryiuEUrkU7y3cHAJ3npf
+https://ecn4x4y9jhjs.feishu.cn/wiki/J4lZwVCryiuEUrkU7y3cHAJ3npf<br>
+在本流程弃用，仅为使用OpenVPI数据集制作流程产生的标注文件提供兼容。<br>
+你可以尝试使用本脚本将OpenVPI数据集制作流程产生的TextGrid标注文件转换为csv格式，并使用csv2htk.py将转换后的CSV格式标注文件转换为HTK格式。<br>
+**使用--skip_silence_insertion可防止此脚本对音频及标注文件添加静音。**
 
 ## utau2ds --> UTAU声库转DiffSinger数据集工具
 

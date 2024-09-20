@@ -53,7 +53,6 @@ def add_ph_num(csv_path,dictionary):
     for i in ph_num:
         string = ' '.join(i)
         ph_num_str.append(string)
-    print(ph_num_str)
 
     ph_num_str[0] = "ph_num"
 
