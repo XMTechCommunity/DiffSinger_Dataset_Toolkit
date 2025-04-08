@@ -6,9 +6,14 @@ import os
 @click.option('--input_file', '-i', default='output.yaml', help='Input file path')
 @click.option('--output_file', '-o', default=None, help='Output file path, if not specified, will save to the input file directory with "update_" prefix')
 @click.option('--prefix', '-p', default='zh', help='Which prefix to add')
-def process_yaml(input_file, output_file, prefix):
+@click.option('--additional_ignored_prefixes', '-aip', default='', help='Additional comma-separated list of prefixes to ignore (e.g., AP,Edge,SP) besides the fixed ones.')
+def process_yaml(input_file, output_file, prefix, additional_ignored_prefixes):
 
-    ignored_prefixes = {'AP', 'Edge', 'SP', 'ax', 'cl'}
+    ignored_prefixes = {'AP', 'SP'}
+    
+    if additional_ignored_prefixes:
+        additional_set = set(additional_ignored_prefixes.split(','))
+        ignored_prefixes.update(additional_set)
     
     if output_file is None:
         directory, filename = os.path.split(input_file)
